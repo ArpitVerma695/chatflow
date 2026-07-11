@@ -6,8 +6,12 @@ let onlineUsers = 0;
 export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: [
+        "http://localhost:5173",
+        process.env.CLIENT_URL,
+      ],
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
@@ -29,7 +33,7 @@ export const initSocket = (server) => {
     socket.on("disconnect", () => {
       console.log("User Disconnected:", socket.id);
 
-      onlineUsers--;
+      onlineUsers = Math.max(onlineUsers - 1, 0);
 
       io.emit("online-users", onlineUsers);
     });
